@@ -1,2 +1,1 @@
-test.by
-test.by/mytest
+

@@ -7,9 +7,9 @@ import java.util.Scanner;
 
 public class Response {
 
-    private final DataInputStream inputStream;
-    private final DataOutputStream outputStream;
-    private final Socket socket;
+    public final DataInputStream inputStream;
+    public final DataOutputStream outputStream;
+    public final Socket socket;
 
     public Response(DataInputStream inputStream, DataOutputStream outputStream, Socket socket) {
         this.inputStream = inputStream;

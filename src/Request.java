@@ -9,6 +9,7 @@ public class Request {
     private int port = 80;
     private String host = "";
     private String path = "";
+    public Response response;
 
     private final Vector<String> requestLines = new Vector<>(0);
 
@@ -57,7 +58,7 @@ public class Request {
     }
 
     public Response sendToHost() throws IOException {
-        if (!Blacklist.findBlocked(host, path)) {
+        if (!(Blacklist.findBlocked(host, path))) {
             InetAddress address = InetAddress.getByName(host);
 
             Socket socket = new Socket(address, port);
@@ -73,8 +74,7 @@ public class Request {
                 send(line, outputStream);
             }
             send("", outputStream);
-
-            return new Response(inputStream, outputStream, socket);
+            response = new Response(inputStream, outputStream, socket);
         } else {
             Journal.add(Thread.currentThread().getId(), " Blocked " + requestLines.elementAt(0));
 
@@ -82,8 +82,9 @@ public class Request {
 
             InputStream is = new ByteArrayInputStream(errorPage.getBytes());
             DataInputStream inputStream = new DataInputStream(is);
-            return new Response(inputStream, null, null);
+            response = new Response(inputStream, null, null);
         }
+        return response;
     }
 
     private void send(String line, DataOutputStream stream) throws IOException {
