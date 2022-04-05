@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class ProxyConnection implements Runnable{
+public class ProxyHandler implements Runnable{
     private Socket socket;
 
-    public ProxyConnection(Socket socket) {
+    public ProxyHandler(Socket socket) {
         this.socket = socket;
     }
 
@@ -19,10 +19,10 @@ public class ProxyConnection implements Runnable{
 
             if (!request.getRequestMethod().equals("CONNECT")) {
                 String requestLine = request.getRequestLines().elementAt(0);
-                Journal.add(Thread.currentThread().getId(), "Received " + requestLine);
+                Audit.record(Thread.currentThread().getId(), "Received " + requestLine);
                 for (String line : request.getRequestLines()) {
                     if (line.contains("Host:")) {
-                        Journal.add(Thread.currentThread().getId(), "\t\t\t" + line);
+                        Audit.record(Thread.currentThread().getId(), "\t\t\t" + line);
                     }
                 }
                 request.changeRequest();
@@ -36,12 +36,14 @@ public class ProxyConnection implements Runnable{
             }
 
         } catch (IOException e) {
-
+            System.err.println("IOException occurred");
+            e.printStackTrace();
         }
 
         try {
             socket.close();
         } catch (IOException e) {
+            System.err.println("IOException occurred");
             e.printStackTrace();
         }
     }

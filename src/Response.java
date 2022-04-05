@@ -29,29 +29,47 @@ public class Response {
         return retLine;
     }
 
-    public void sendToBrowser(DataOutputStream browserOutputStream) throws IOException {
-        byte[] buffer = new byte[1024];
-        int count = inputStream.read(buffer);
-        Journal.add(Thread.currentThread().getId(), "Host response > " + getResponse(buffer, count));
-        Journal.add(Thread.currentThread().getId(), "\t\t\t" + "Sending data to browser");
-        while (count != -1) {
-            send(buffer, count, browserOutputStream);
-            count = inputStream.read(buffer);
+    public void sendToBrowser(DataOutputStream browserOutputStream){
+        try {
+            byte[] buffer = new byte[1024];
+            int count = inputStream.read(buffer);
+            Audit.record(Thread.currentThread().getId(), "Host response > " + getResponse(buffer, count));
+            Audit.record(Thread.currentThread().getId(), "\t\t\t" + "Sending data to browser");
+            while (count != -1) {
+                send(buffer, count, browserOutputStream);
+                count = inputStream.read(buffer);
+            }
+        }
+        catch(IOException x){
+            System.err.println("IOException occurred");
+            x.printStackTrace();
         }
     }
 
-    public void closeStreams() throws IOException {
-        inputStream.close();
-        if (outputStream != null) {
-            outputStream.close();
+    public void closeStreams(){
+        try {
+            inputStream.close();
+            if (outputStream != null) {
+                outputStream.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
         }
-        if (socket != null) {
-            socket.close();
+        catch(IOException x){
+            System.err.println("IOException occurred");
+            x.printStackTrace();
         }
     }
 
-    private void send(byte[] bytes, int count, DataOutputStream stream) throws IOException {
-        stream.write(bytes, 0, count);
-        stream.flush();
+    private void send(byte[] bytes, int count, DataOutputStream stream){
+        try {
+            stream.write(bytes, 0, count);
+            stream.flush();
+        }
+        catch(IOException x){
+            System.err.println("IOException occurred");
+            x.printStackTrace();
+        }
     }
 }

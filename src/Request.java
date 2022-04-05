@@ -17,10 +17,16 @@ public class Request {
         return requestLines;
     }
 
-    public Request(BufferedReader reader) throws IOException {
-        String requestLine;
-        while ((requestLine = reader.readLine()) != null && !requestLine.equals("")) {
-            requestLines.add(requestLine);
+    public Request(BufferedReader reader) {
+        try {
+            String requestLine;
+            while ((requestLine = reader.readLine()) != null && !requestLine.equals("")) {
+                requestLines.add(requestLine);
+            }
+        }
+        catch(IOException x){
+            System.err.println("IOException occurred");
+            x.printStackTrace();
         }
     }
 
@@ -41,7 +47,8 @@ public class Request {
                     port = url.getPort();
                 }
             } catch (MalformedURLException e) {
-
+                System.err.println("MalformedURLException occurred");
+                e.printStackTrace();
             }
 
             requestLine = method + " " + path + " " + version;
@@ -58,27 +65,27 @@ public class Request {
     }
 
     public Response sendToHost() throws IOException {
-        if (!(Blacklist.findBlocked(host, path))) {
+        if (!(Blacklist.isBlocked(host, path))) {
             InetAddress address = InetAddress.getByName(host);
 
             Socket socket = new Socket(address, port);
             DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
             DataInputStream inputStream = new DataInputStream(socket.getInputStream());
 
-            Journal.add(Thread.currentThread().getId(), "Sending " + requestLines.elementAt(0));
+            Audit.record(Thread.currentThread().getId(), "Sending " + requestLines.elementAt(0));
 
             for (String line : requestLines) {
                 if (line.contains("Host:")) {
-                    Journal.add(Thread.currentThread().getId(), "\t\t\t" + line);
+                    Audit.record(Thread.currentThread().getId(), "\t\t\t" + line);
                 }
                 send(line, outputStream);
             }
             send("", outputStream);
             response = new Response(inputStream, outputStream, socket);
         } else {
-            Journal.add(Thread.currentThread().getId(), " Blocked " + requestLines.elementAt(0));
+            Audit.record(Thread.currentThread().getId(), " Blocked " + requestLines.elementAt(0));
 
-            String errorPage = "HTTP/1.1 403 Forbidden\r\n\r\n" + ErrorPage.getHtmlString(host + path);
+            String errorPage = "HTTP/1.1 403 Forbidden\r\n\r\n" + BlockedPage.getHtmlString(host + path);
 
             InputStream is = new ByteArrayInputStream(errorPage.getBytes());
             DataInputStream inputStream = new DataInputStream(is);
@@ -87,9 +94,15 @@ public class Request {
         return response;
     }
 
-    private void send(String line, DataOutputStream stream) throws IOException {
-        stream.writeBytes(line + "\r\n");
-        stream.flush();
+    private void send(String line, DataOutputStream stream){
+        try {
+            stream.writeBytes(line + "\r\n");
+            stream.flush();
+        }
+        catch(IOException x){
+            System.err.println("IOException occurred");
+            x.printStackTrace();
+        }
     }
 
     public String getRequestMethod() {

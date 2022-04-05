@@ -3,18 +3,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Blacklist {
-    private static String blacklistFilePath = "blacklist.txt";
-
-    public static void setBlacklistFilePath(String blacklistFilePath) {
-        Blacklist.blacklistFilePath = blacklistFilePath;
-    }
-
-    public static class BannedAddress {
+    public static class BannedURL {
         public String path = "/";
         public String host = "";
     }
 
-    public static  ArrayList<BannedAddress> blacklist = new ArrayList<>();
+    public static  ArrayList<BannedURL> blacklist = new ArrayList<>();
 
     public static void update() {
         try {
@@ -24,7 +18,7 @@ public class Blacklist {
             scanner.useDelimiter("\n");
             while (scanner.hasNextLine()) {
                 line = scanner.nextLine();
-                BannedAddress address = new BannedAddress();
+                BannedURL address = new BannedURL();
                 if (line.contains("/")) {
                     int slashPos = line.indexOf('/');
                     address.host = line.substring(0, slashPos);
@@ -65,13 +59,13 @@ public class Blacklist {
     }
 
     public static void print() {
-        for (BannedAddress i : blacklist) {
+        for (BannedURL i : blacklist) {
             System.out.println(i.host + i.path);
         }
     }
 
-    public static boolean findBlocked(String host, String path) {
-        for (BannedAddress address : blacklist) {
+    public static boolean isBlocked(String host, String path) {
+        for (BannedURL address : blacklist) {
             if (address.host.equals(host)) {
                 return true;
             }

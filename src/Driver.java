@@ -1,22 +1,13 @@
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Main {
+public class Driver {
     private static int port;
 
     public static void main(String[] args) {
-        if (args.length == 1){
-            try {
-                port = Integer.parseInt(args[0]);
-            } catch (NumberFormatException e) {
-                System.out.println("Wrong number format");
-                return;
-            }
-        }
         while (true) {
             try {
                 System.out.println("<------SELECT AN OPTION------>");
@@ -49,7 +40,7 @@ public class Main {
                     Blacklist.print();
                 }
                 else if (option == 3) {
-                    System.out.println("Enter working port as parameter");
+                    System.out.println("Enter port to be used by Proxy-->");
                     port = Integer.parseInt(s.nextLine());
                     System.out.println("Server is working on localhost:" + port + "\n");
 
@@ -60,15 +51,16 @@ public class Main {
                         Blacklist.update();
                         Blacklist.print();
 
-                        ErrorPage.load();
+                        BlockedPage.load();
 
                         while (true) {
                             Socket socket = server.accept();
 
-                            Thread proxyThread = new Thread(new ProxyConnection(socket));
+                            Thread proxyThread = new Thread(new ProxyHandler(socket));
                             proxyThread.start();
                         }
                     } catch (IOException e) {
+                        System.err.println("IOException occurred");
                         e.printStackTrace();
                     }
                 } else {
