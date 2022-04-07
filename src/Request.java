@@ -11,6 +11,7 @@ public class Request {
     private String path = "";
     public Response response;
 
+    //Creates a vector of type string to store requests made
     private final Vector<String> requestLines = new Vector<>(0);
 
     public Vector<String> getRequestLines() {
@@ -20,8 +21,10 @@ public class Request {
     public Request(BufferedReader reader) {
         try {
             String requestLine;
-            while ((requestLine = reader.readLine()) != null && !requestLine.equals("")) {
-                requestLines.add(requestLine);
+            
+            /** Checks that data read from the socket is not null nor empty and adds it the vector of requests **/
+            while ((requestLine = reader.readLine()) != null && !requestLine.equals("")) { 
+                requestLines.add(requestLine);  
             }
         }
         catch(IOException x){
@@ -32,15 +35,15 @@ public class Request {
 
     public void changeRequest() {
         if (requestLines.size() > 0) {
-            String requestLine = requestLines.elementAt(0);
+            String requestLine = requestLines.elementAt(0); //Returns the first element from the vector of requests
 
-            String[] parts = requestLine.split(" ");
+            String[] parts = requestLine.split(" ");  //Splits the request after each space and adds it to a String array
             String method = parts[0];
             String absolutePath = parts[1];
             String version = parts[2];
 
             try {
-                URL url = new URL(absolutePath);
+                URL url = new URL(absolutePath);  //Creates a URL object with the absolutePath
                 path = url.getPath();
                 host = url.getHost();
                 if (url.getPort() != -1) {
@@ -51,7 +54,7 @@ public class Request {
                 e.printStackTrace();
             }
 
-            requestLine = method + " " + path + " " + version;
+            requestLine = method + " " + path + " " + version;		
 
             requestLines.set(0, requestLine);
             requestLines.add("Connection: close");

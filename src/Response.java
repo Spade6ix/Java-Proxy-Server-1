@@ -16,7 +16,8 @@ public class Response {
         this.outputStream = outputStream;
         this.socket = socket;
     }
-
+    	
+    //Method to get response from
     private String getResponse(byte[] bytes, int count) {
         byte[] buffBytes = Arrays.copyOf(bytes, count);
         String buffStr = new String(buffBytes);

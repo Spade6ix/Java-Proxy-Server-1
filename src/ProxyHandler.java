@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+//Implements the class Runnable to facilitate multi-threading
 public class ProxyHandler implements Runnable{
     private Socket socket;
 
@@ -11,11 +12,12 @@ public class ProxyHandler implements Runnable{
         this.socket = socket;
     }
 
+    /** Creates a new instance of ProxyHandler that reads and outputs data **/
     @Override
     public void run() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())) {
-            Request request = new Request(reader);
+        	Request request = new Request(reader);
 
             if (!request.getRequestMethod().equals("CONNECT")) {
                 String requestLine = request.getRequestLines().elementAt(0);

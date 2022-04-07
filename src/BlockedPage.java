@@ -8,6 +8,7 @@ public class BlockedPage {
     private static String errorMsg = "";
 
     public static void load() throws IOException {
+    	//Retrieves the pre-made html error page 
         errorMsg = new String(Files.readAllBytes(Paths.get("blacklist.html")));
     }
 
