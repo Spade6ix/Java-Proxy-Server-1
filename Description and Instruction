@@ -1,0 +1,16 @@
+Group Members: Sonneil Wellington, Shanae Heslop, Ruddan Phillips 
+
+Description
+This project illustrates a simple http proxy server. It was coded using mainly the Java programming language with a few HTML aspects. 
+This server reads and tracks only http based connections, provides blacklisting and multithreading capabilities. 
+
+
+User Instructions
+1. To run the proxy, you must first configure your proxy settings
+2. On your local machine, go to Settings-> Network & Internet-> Proxy -> Manual Proxy Setup
+3. In the Manual Proxy Setup section enter as the address 'localhost' and as the port any number not being actively used with the exception of port 80
+4. Save the changes
+5. Run the program
+6. Upon starting the program ,a menu will appear with several options to blacklist a website, view the current blacklist or run proxy server
+7. Select the option most suitable, if the option run proxy server is selected then ensure to enter the port number specified during the manual proxy setup
+8. Enter option 4 to exit and stop the program
